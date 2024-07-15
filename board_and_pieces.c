@@ -6,9 +6,6 @@
 #define BOARD_SIZE 8
 
 
-//notes: for now don't care about making it clear which pieces are black or white otb, i'll change to using unicode characters after the logic works
-
-
 typedef struct{
     char type;
     char colour;
@@ -42,7 +39,7 @@ void printBoard()
 {
     for(int i=0;i<BOARD_SIZE;i++)
     {
-        printf("\n%d",8-i);
+        printf("\n%d",i);
         for(int j=0;j<BOARD_SIZE;j++)
         {
             printf(" %c ", board[i][j].type);
@@ -51,36 +48,41 @@ void printBoard()
     printf("\n ");
     for(int i=0;i<BOARD_SIZE;i++)
     {
-        printf(" %d ", i + 1);
+        printf(" %d ", i );
     }
     printf("\n");
 }
 
-//for generic valid conditions (board boundaries, is space empty)
-bool isValidMove(int startX, int startY, int endX, int endY)
+//checking all possible valid moves
+bool isValidMove(int startRow, int startCol, int endRow, int endCol, int turn)
 {
-    char piece = board[startX][startY].type;
-    if(startX < 0 || startX > BOARD_SIZE || startY < 0 || startY > BOARD_SIZE ||
-        endX < 0 || endX > BOARD_SIZE || endY < 0 || endY > BOARD_SIZE){
+    char piece = board[startRow][startCol].type;
+    //char colour = board[startRow][startCol].colour;
+    if(startRow < 0 || startRow >= BOARD_SIZE || startCol < 0 || startCol >= BOARD_SIZE ||
+        endRow < 0 || endRow >= BOARD_SIZE || endCol < 0 || endCol >= BOARD_SIZE){
         return false;
         }
-        if(piece == 'P')
-        {
 
-        }
-        return true;
+        if(piece == 'P' && (board[startRow+2][startCol].type == '.'||board[startRow-2][startCol].type == '.')){printf("ahhhhhhhhhhhhh");return true;}
+        if(piece == 'P' && (board[startRow+1][startCol].type == '.'||board[startRow-1][startCol].type == '.')){printf("ahhhhhhhhhhhhh");return true;}
+        return false;
 
 }
+/*
+if piece is PAWN and it's in its starting pos available moves are 2 ahead if square is clear
+if piece is PAWN and it's not in its start pos available moves are 1 ahead if square is clear
+
+*/
 
 
-void movePiece(int startX, int startY, int endX, int endY)
+void movePiece(int startRow, int startCol, int endRow, int endCol, int *turn)
 {
     //for an index position we must check: what piece it is, what moves it can make, what move it will make
-    int x1 = startX-1, x2 = endX-1, y1 = 8-startY, y2 = 8-endY;
-    if(isValidMove(x1,x2,y1,y2))
+    int round = *turn;
+    if(isValidMove(startRow,endRow,startCol,endCol,round))
     {
-        board[y2][x2].type = board[y1][x1].type;
-        board[y1][x1].type = '.';
+        board[endRow][endCol].type = board[startRow][startCol].type;
+        board[startRow][startCol].type = '.';
         printBoard();
     }
 }
@@ -91,30 +93,31 @@ int main()
     initBoard();
     printBoard();
     char piece;
-    int startX, startY, endX, endY;
+    int startRow, startCol, endRow, endCol;
     do
     {
         if(playerTurn %2 !=0 )
         {
-            printf("\nplayer turn: %d", playerTurn);
+            printf("\nplayer turn: %d ", playerTurn);
             printf("White's turn\n");
-            printf("Enter your move (startX startY endX endY)\n");
-            scanf("%d %d %d %d",&startX, &startY, &endX, &endY);
-            movePiece(startX, startY, endX, endY);
+            printf("Enter your move (startRow startCol endRow endCol)\n");
+            scanf("%d %d %d %d",&startRow, &startCol, &endRow, &endCol);
+            movePiece(startRow, startCol, endRow, endCol, &playerTurn);
             playerTurn++;
         }
         else
         {
-            printf("\nplayer turn: %d", playerTurn);
+            printf("\nplayer turn: %d ", playerTurn);
             printf("Black's turn\n");
-            printf("Enter your move (startX startY endX endY)\n");
-            scanf("%d %d %d %d", &startX, &startY, &endX, &endY);
-            movePiece(startX, startY, endX, endY);
+            printf("Enter your move (startRow startCol endRow endCol)\n");
+            scanf("%d %d %d %d", &startRow, &startCol, &endRow, &endCol);
+            movePiece(startRow, startCol, endRow, endCol, &playerTurn);
             playerTurn++;
         }
-    }while(isValidMove(startX, startY, endX, endY));
+    }while(isValidMove(startRow, startCol, endRow, endCol, playerTurn));
     return 0;
 }
+
 
 
 
