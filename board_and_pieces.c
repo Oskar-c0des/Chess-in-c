@@ -59,31 +59,29 @@ void printBoard()
 //for generic valid conditions (board boundaries, is space empty)
 bool isValidMove(int startX, int startY, int endX, int endY)
 {
+    char piece = board[startX][startY].type;
     if(startX < 0 || startX > BOARD_SIZE || startY < 0 || startY > BOARD_SIZE ||
         endX < 0 || endX > BOARD_SIZE || endY < 0 || endY > BOARD_SIZE){
         return false;
+        }
+        if(piece == 'P')
+        {
+
         }
         return true;
 
 }
 
-void movePiece(char pieceType, int startX, int startY, int endX, int endY, int *playerTurn)
+
+void movePiece(int startX, int startY, int endX, int endY)
 {
     //for an index position we must check: what piece it is, what moves it can make, what move it will make
     int x1 = startX-1, x2 = endX-1, y1 = 8-startY, y2 = 8-endY;
-    switch(pieceType){
-        case 'P':
-            if(isValidMove(x1,x2,y1,y2))
-            {
-                board[y2][x2].type = board[y1][x1].type;
-                board[y1][x1].type = '.';
-                printBoard();
-                *playerTurn++;
-                break;
-            }
-        default:
-            break;
-
+    if(isValidMove(x1,x2,y1,y2))
+    {
+        board[y2][x2].type = board[y1][x1].type;
+        board[y1][x1].type = '.';
+        printBoard();
     }
 }
 
@@ -98,20 +96,25 @@ int main()
     {
         if(playerTurn %2 !=0 )
         {
+            printf("\nplayer turn: %d", playerTurn);
             printf("White's turn\n");
-            printf("Enter your move (piece startX startY endX endY)\n");
-            scanf("%c %d %d %d %d",&piece, &startX, &startY, &endX, &endY);
-            movePiece(piece,startX, startY, endX, endY,&playerTurn);
+            printf("Enter your move (startX startY endX endY)\n");
+            scanf("%d %d %d %d",&startX, &startY, &endX, &endY);
+            movePiece(startX, startY, endX, endY);
+            playerTurn++;
         }
         else
         {
+            printf("\nplayer turn: %d", playerTurn);
             printf("Black's turn\n");
-            printf("Enter your move (piece startX startY endX endY)\n");
-            scanf("%c %d %d %d %d",&piece, &startX, &startY, &endX, &endY);
-            movePiece(piece,startX, startY, endX, endY,&playerTurn);
+            printf("Enter your move (startX startY endX endY)\n");
+            scanf("%d %d %d %d", &startX, &startY, &endX, &endY);
+            movePiece(startX, startY, endX, endY);
+            playerTurn++;
         }
     }while(isValidMove(startX, startY, endX, endY));
     return 0;
 }
+
 
 
